@@ -269,7 +269,7 @@ export const getQiniuUploadToken = params => {
     //return axios.get(`${base}/qiniutoken`, {params: params});
     return  axios({
         method: 'get',
-        url: `${base}/qiniutoken`,
+        url: `${base}/qiniutokenadmin`,
         params: params,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
        transformRequest: function(obj) {var str = [];for(var p in obj)str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));return str.join("&");},
