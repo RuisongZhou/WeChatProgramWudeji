@@ -9,6 +9,10 @@
 				<el-form-item>
 					<el-button type="primary" v-on:click="getUsers">查询</el-button>
 				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" v-on:click="getUsers">查询</el-button>
+				</el-form-item>
+				<el-tag>积分数量：{{this.userscore}}</el-tag>
 			</el-form>
 		</el-col>
 
@@ -16,17 +20,19 @@
 		<el-table :data="users" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%; ">
 			<el-table-column type="selection" width="55">
 			</el-table-column>
-			<el-table-column type="index" width="60">
+			<el-table-column type="index" width="50">
 			</el-table-column>
-			<el-table-column prop="name" label="昵称" width="180" sortable>
+			<el-table-column prop="name" label="昵称" width="150" sortable>
 			</el-table-column>
 			<el-table-column prop="gender" label="性别" width="100" :formatter="formatSex" sortable>
 			</el-table-column>
 			<el-table-column prop="college" label="大学" min-width="180" sortable>
 			</el-table-column>
-			<el-table-column prop="tel" label="注册电话" min-width="120" sortable>
+			<el-table-column prop="community" label="社团" min-width="180" sortable>
 			</el-table-column>
-			<el-table-column prop="scores" label="积分" min-width="80" sortable>
+			<el-table-column prop="tel" label="注册电话" min-width="150" sortable>
+			</el-table-column>
+			<el-table-column prop="scores" label="积分" min-width="100" sortable>
 			</el-table-column>
 			<el-table-column label="操作"  width="250" >
 				<template scope="scope">
@@ -44,11 +50,11 @@
 			</el-pagination>
 		</el-col>
 
-		<!--编辑界面-->
-		<el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
-			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
+		<!--分配界面-->
+		<el-dialog title="分配积分" v-model="editFormVisible" :close-on-click-modal="false">
+			<el-form :model="editForm" label-width="80px" ref="editForm">
 				<el-form-item label="增加积分">	
-					<el-input-number v-model="addScores.score" :min="0" :max="userscore > 100 ? 100 : userscore"></el-input-number>
+					<el-input-number v-model="addScores.score" :min="0" :max="this.userscore > 100 ? 100 : userscore"></el-input-number>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -60,7 +66,7 @@
 		<!--流水列表-->
 		<el-dialog title="流水" v-model="FlowFormVisible" :close-on-click-modal="false">
 			<el-table :data="flows" highlight-current-row v-loading="flowloading" style="width: 100%;">
-				<el-table-column type="index" width="60">
+				<el-table-column type="index" width="50">
 				</el-table-column>
 				<el-table-column prop="senderName" label="买方" width="120" sortable>
 				</el-table-column>
@@ -95,14 +101,9 @@
 				page: 1,
 				listLoading: false,
 				sels: [],//列表选中列
-
 				editFormVisible: false,//编辑界面是否显示
 				editLoading: false,
-				editFormRules: {
-					name: [
-						{ required: true, message: '请输入昵称', trigger: 'blur' }
-					]
-				},
+
 				//编辑界面数据
 				username:"",
 				userPermission:"",
@@ -137,9 +138,10 @@
 				var user = sessionStorage.getItem('user');
 				if (user) {
 						user = JSON.parse(user);
+						this.scores = user.scores;
 					}
 				let para = {
-					//page: this.page,
+					page: this.page,
 					name: this.filters.name,
 					community: user.community,
 					access: 1,
@@ -147,10 +149,15 @@
 				this.listLoading = true;
 				//NProgress.start();
 				getUserListPage(para).then((res) => {
-					//this.total = res.data.total;
+					this.total = res.data.total;
 					this.users = res.data.UsersInformation;
 					this.listLoading = false;
 					//NProgress.done();
+				}).catch(() => {
+					this.$message({
+							message: "连接超时",
+							type: "warning"
+						});
 				});
 			},
 			//删除
@@ -174,7 +181,8 @@
 
 				});
 			},
-			//显示编辑界面
+			
+			//显示分配积分界面
 			handleEdit: function (index, row) {
 				this.editFormVisible = true;
 				this.editForm.to = row.permission == "2" ? row.username : row.id;
@@ -287,7 +295,7 @@
 				user = JSON.parse(user);
 				this.username = user.username;
 				this.userPermission = user.permission;
-				this.userscore = user.scores;
+				this.userscore = user.scores ? user.scores : 0;
 			}
 		}
 	}

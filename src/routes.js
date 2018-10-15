@@ -13,6 +13,7 @@ import register from './views/register.vue'
 //import echarts from './views/charts/echarts.vue'
 import forum from './views/nav3/forum.vue'
 import order from './views/nav2/orderManage.vue'
+import activity from './views/nav3/activities.vue'
 
 let routes = [
     {
@@ -52,8 +53,8 @@ let routes = [
             name: '商城',
             iconCls: 'fa fa-id-card-o',
             children: [
-                { path: '/page4', component: Page4, name: '查看商城' },
-                { path: '/page5', component: Page5, name: '发布商品' },
+                { path: '/market', component: Page4, name: '查看商城' },
+                { path: '/postmodel', component: Page5, name: '发布商品' },
                 { path: '/order', component: order, name: '订单管理'}
         ]
     },
@@ -63,7 +64,8 @@ let routes = [
         name: '论坛',
         iconCls: 'fa fa-bar-chart',
         children: [
-            { path: '/forums', component: forum, name: '板块管理' }
+            { path: '/forums', component: forum, name: '板块管理' },
+            { path: '/activity', component: activity, name: '活动管理'}
         ]
     },
     {

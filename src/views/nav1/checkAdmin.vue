@@ -15,15 +15,19 @@
 		<!--列表-->
 		<template>
 			<el-table :data="users" highlight-current-row v-loading="loading" style="width: 100%;">
-				<el-table-column type="index" width="60">
+				<el-table-column type="index" width="50">
 				</el-table-column>
 				<el-table-column prop="name" label="姓名" width="120" sortable>
 				</el-table-column>
 				<el-table-column prop="community" label="社团名称" min-width="120" sortable>
 				</el-table-column>
+				<el-table-column prop="college" label="大学名称" min-width="180" sortable>
+				</el-table-column>
 				<el-table-column prop="tel" label="注册电话" min-width="120" sortable>
 				</el-table-column>
                 <el-table-column prop="username" label="注册账户" min-width="130" sortable>
+				</el-table-column>
+				<el-table-column prop="IDcard" label="身份证号" min-width="130" sortable>
 				</el-table-column>
 				<el-table-column label="操作" width="150">
 				<template scope="scope">
@@ -37,84 +41,93 @@
 	</section>
 </template>
 <script>
-	import { getAdminList,passRegisterAdministrator, refuseRegisterAdministrator } from '../../api/api';
-	//import NProgress from 'nprogress'
-	export default {
-		data() {
-			return {
-				filters: {
-					name: ''
-				},
-				loading: false,
-				users: [
-				],
-				refuseLoading:false,
-				passLoading:false
-			}
-		},
-		methods: {
+import {
+  getAdminList,
+  passRegisterAdministrator,
+  refuseRegisterAdministrator
+} from "../../api/api";
+//import NProgress from 'nprogress'
+export default {
+  data() {
+    return {
+      filters: {
+        name: ""
+      },
+      loading: false,
+      users: [],
+      refuseLoading: false,
+      passLoading: false
+    };
+  },
+  methods: {
+    //获取用户列表
+    getUser: function() {
+      var user = sessionStorage.getItem("user");
+      if (user) {
+        user = JSON.parse(user);
+        if (user.permission != "3") return;
+      }
+      let para = {
+        name: this.filters.name,
+        username: user.username,
+        access: 0 //register
+      };
+      this.loading = true;
+      //NProgress.start();
+      getAdminList(para)
+        .then(res => {
+          this.users = res.data.UsersInformation;
+          this.loading = false;
+          //NProgress.done();
+        })
+        .catch(() => {
+          this.$message({
+            message: "连接超时",
+            type: "warning"
+          });
+        });
+    },
+    //通过
+    handlePass: function(index, row) {
+      this.passLoading = true;
+      let para = {
+        username: row.username,
+        access: 1
+      };
+      passRegisterAdministrator(para).then(res => {
+        this.passLoading = false;
+        this.$message({
+          message: res.data.code == "1" ? "操作成功" : "操作失败",
+          type: res.data.code == "1" ? "success" : "error"
+        });
+        this.getUser();
+      });
+    },
 
-			//获取用户列表
-			getUser: function () {
-				var user = sessionStorage.getItem('user');
-				if (user) {
-					user = JSON.parse(user);
-					if(user.permission != "3")
-						return;
-				}
-				let para = {
-					name: this.filters.name,
-					username: user.username,
-					access : 0,	//register
-				};
-				this.loading = true;
-				//NProgress.start();
-				getAdminList(para).then((res) => {
-					this.users = res.data.UsersInformation;
-					this.loading = false;
-					//NProgress.done();
-				});
-            },
-            //通过
-            handlePass:function(index, row) {
-                this.passLoading = true;
-				let para = { 
-							 username:row.username ,
-							 access:1 };
-				passRegisterAdministrator(para).then((res) => {
-					this.passLoading = false;
-					this.$message({
-						message: (res.data.code == "1") ? "操作成功" : "操作失败",
-						type: (res.data.code == "1"	) ? "success" : "error"
-					});
-					this.getUser();
-				});
-            },
+    //拒绝
+    handleDel: function(index, row) {
+      this.refuseLoading = true;
+      let para = {
+        id: row.id,
+        username: row.username,
+        access: -1
+      };
+      refuseRegisterAdministrator(para).then(res => {
+        this.refuseLoading = false;
+        this.$message({
+          message: res.data.code == "1" ? "操作成功" : "操作失败",
+          type: res.data.code == "1" ? "success" : "error"
+        });
+        this.getUser();
+      });
+    }
+  },
 
-            //拒绝
-            handleDel: function (index, row) {
-				this.refuseLoading = true;
-				let para = { id:row.id,
-							username:row.username,
-							access: -1 };
-				refuseRegisterAdministrator(para).then((res) => {
-					this.refuseLoading = false;
-					this.$message({
-						message: (res.data.code == "1") ? "操作成功" : "操作失败",
-						type: (res.data.code == "1") ? "success" : "error"
-					});
-					this.getUser();
-				});
-            },
-		},
-	
-		mounted() {
-			this.getUser();
-		}
-	};
-
+  mounted() {
+    this.getUser();
+  }
+};
 </script>
 
 <style scoped>
-
 </style>

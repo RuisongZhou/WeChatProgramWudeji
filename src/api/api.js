@@ -361,3 +361,96 @@ export const removeBlog = params => {
        transformRequest: function(obj) {var str = [];for(var p in obj)str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));return str.join("&");},
       });  
 }
+
+//置顶发帖
+export const pushTopBlog = params => {
+    //return axios.post(`${base}/postblogs/remove`, {params: params});
+    return  axios({
+        method: 'post',
+        url: `${base}/blogs/top`,
+        data: params,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+       transformRequest: function(obj) {var str = [];for(var p in obj)str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));return str.join("&");},
+      });  
+}
+
+//加精发帖
+export const pushEliteBlog = params => {
+    //return axios.post(`${base}/postblogs/remove`, {params: params});
+    return  axios({
+        method: 'post',
+        url: `${base}/blogs/essence`,
+        data: params,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+       transformRequest: function(obj) {var str = [];for(var p in obj)str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));return str.join("&");},
+      });  
+}
+
+
+//获取置顶帖
+export const getTopBlog = params => {
+    //return axios.post(`${base}/postblogs/remove`, {params: params});
+    return  axios({
+        method: 'get',
+        url: `${base}/postblogs/top`,
+        params: params,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+       transformRequest: function(obj) {var str = [];for(var p in obj)str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));return str.join("&");},
+      });  
+}
+
+//获取加精贴
+export const getEliteBlog = params => {
+    //return axios.post(`${base}/postblogs/remove`, {params: params});
+    return  axios({
+        method: 'get',
+        url: `${base}/postblogs/essence`,
+        params: params,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+       transformRequest: function(obj) {var str = [];for(var p in obj)str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));return str.join("&");},
+      });  
+}
+
+//获得活动列表
+export const getActivitiesList = params => {
+    return axios({
+        method: 'get',
+        url: `${base}/activity/list`,
+        params: params,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+       transformRequest: function(obj) {var str = [];for(var p in obj)str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));return str.join("&");},
+    });  
+}
+
+//添加活动
+export const addActivity = params => {
+    return axios({
+        method: 'post',
+        url: `${base}/activity/add`,
+        data: params,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+       transformRequest: function(obj) {var str = [];for(var p in obj)str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));return str.join("&");},
+    });  
+}
+
+//删除活动
+export const deleteActivity = params => {
+    return axios({
+        method: 'delete',
+        url: `${base}/activity/remove`,
+        data: params,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+       transformRequest: function(obj) {var str = [];for(var p in obj)str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));return str.join("&");},
+    });  
+}
+
+//获取活动报名列表
+export const getSignList = params => {
+    return axios({
+        method: 'get',
+        url: `${base}/activity/signlist`,
+        params: params,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+       transformRequest: function(obj) {var str = [];for(var p in obj)str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));return str.join("&");},
+    });  
+}

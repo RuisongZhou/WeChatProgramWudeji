@@ -15,13 +15,15 @@
 		<!--列表-->
 		<template>
 			<el-table :data="users" highlight-current-row v-loading="loading" style="width: 100%;">
-				<el-table-column type="index" width="60">
+				<el-table-column type="index" width="50">
 				</el-table-column>
 				<el-table-column prop="name" label="昵称" width="120" sortable>
 				</el-table-column>
 				<el-table-column prop="gender" label="性别" width="100" :formatter="formatSex" sortable>
 				</el-table-column>
 				<el-table-column prop="college" label="大学" min-width="100" sortable>
+				</el-table-column>
+				<el-table-column prop="community" label="社团" min-width="180" sortable>
 				</el-table-column>
 				<el-table-column prop="tel" label="注册电话" min-width="100" sortable>
 				</el-table-column>
@@ -74,6 +76,11 @@
 					this.users = res.data.UsersInformation;
 					this.loading = false;
 					//NProgress.done();
+				}).catch(() => {
+					this.$message({
+							message: "连接超时",
+							type: "warning"
+						});
 				});
 			},
 			//通过

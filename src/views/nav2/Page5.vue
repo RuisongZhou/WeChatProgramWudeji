@@ -11,11 +11,24 @@
 			<el-input type="number" v-model="form.price"></el-input>
 			</el-col>
 		</el-form-item>
-    	<el-form-item label="商品数量">
+    <el-form-item label="商品数量">
 			<el-col :span="6">
 			<el-input type="number" v-model="form.number"></el-input>
 			</el-col>
 		</el-form-item>
+    <el-form-item label="商品性质">
+			<template>
+        <el-select v-model="form.feature" placeholder="请选择">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </template>
+		</el-form-item>
+    
 
 		<!---添加图片及上传-->
 		<el-form-item label="商品图片">
@@ -54,17 +67,36 @@ export default {
       form: {
         name: "",
         price: "",
-        describe:"AddGood",
+        describe: "AddGood",
         content: "",
-        number:"",
-        poster:"",
-        user:sessionStorage.getItem('user').name,
-        nickName:"",
+        number: "",
+        poster: "",
+        nickName: "",
         shopKind: 0,
+        feature:'',
         picture: []
       },
       addform: null,
-      listloading: false
+      listloading: false,
+        options: [{
+          value: '1',
+          label: '服装'
+        }, {
+          value: '2',
+          label: '场地使用'
+        }, {
+          value: '3',
+          label: '道具租赁'
+        }, {
+          value: '4',
+          label: '摄影'
+        }, {
+          value: '5',
+          label: '后期'
+        }, {
+          value: '6',
+          label: '服装'
+        }],
     };
   },
   methods: {
@@ -84,11 +116,11 @@ export default {
       const isLt1M = file.size / 1024 / 1024 / 2 < 1;
 
       if (!isIMAGE) {
-        this.$message.error("上传文件只能是图片格式!"); 
+        this.$message.error("上传文件只能是图片格式!");
         return;
       }
       if (!isLt1M) {
-        this.$message.error("上传文件大小不能超过500KB!"); 
+        this.$message.error("上传文件大小不能超过500KB!");
         return;
       }
 
@@ -132,7 +164,7 @@ export default {
     },
 
     handleSuccess(response, file, fileList) {
-      var imagekey = `http://pg6q6hwnq.bkt.clouddn.com/${response.key}`;
+      var imagekey = `http://misswd.com/${response.key}`;
       this.form.picture.push(imagekey);
     },
 
@@ -141,24 +173,24 @@ export default {
 
       //其他业务代码
 
-      var user = sessionStorage.getItem('user');
-			if (user) {
-				user = JSON.parse(user);
-				this.form.poster = user.username;
-				this.form.nickName = user.name;
-			
-			}
+      var user = sessionStorage.getItem("user");
+      if (user) {
+        user = JSON.parse(user);
+        this.form.poster = user.username;
+        this.form.nickName = user.name;
+      }
       this.listloading = true;
       let para = Object.assign({}, this.form);
+      console.log(para);
       addModel(para)
         .then(res => {
           this.listloading = false;
           //NProgress.done();
           this.$message({
-              message: res.data.code == "1" ? "操作成功":"操作失败",
-              type: res.data.code == "1" ? "success" : "error"
-            });
-          this.refresh();
+            message: res.data.code == "1" ? "操作成功" : "操作失败",
+            type: res.data.code == "1" ? "success" : "error"
+          });
+          this.reload();
         })
         .catch(() => {});
     }

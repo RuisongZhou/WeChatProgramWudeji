@@ -14,25 +14,25 @@
 
 		<!--列表-->
 		<el-table :data="models" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%; ">
-			<el-table-column type="index" width="60">
+			<el-table-column type="index" width="50">
 			</el-table-column>
-			<el-table-column prop="orderNumber" label="商品订单号" width="200" sortable>
+			<el-table-column prop="orderNumber" label="商品订单号" width="190" sortable>
 			</el-table-column>
             <el-table-column prop="buyerName" label="购买用户" width="130" sortable>
 			</el-table-column>
 			<el-table-column prop="model.modelName" label="商品名称" width="130" sortable>
 			</el-table-column>
-			<el-table-column prop="model.price" label="商品价格" min-width="100" sortable>
+			<el-table-column prop="model.price" label="商品价格" min-width="120" sortable>
 			</el-table-column>
 			<el-table-column prop="ordertime" label="下单时间" min-width="160" sortable>
 			</el-table-column>
-			<el-table-column prop="buyNumber" label="购买数量" min-width="100" sortable>
+			<el-table-column prop="buyNumber" label="购买数量" min-width="120" sortable>
 			</el-table-column>
-			<el-table-column prop="reMarks" label="备注" min-width="200" sortable>
+			<el-table-column prop="reMarks" label="备注" min-width="150" sortable>
 			</el-table-column>
-            <el-table-column prop="status" label="订单状态" min-width="100" :formatter="formatStatus" sortable>
+            <el-table-column prop="status" label="订单状态" min-width="120" :formatter="formatStatus" sortable>
 			</el-table-column>
-			<el-table-column label="操作"  width="170" >
+			<el-table-column label="操作"  width="120" >
 				<template scope="scope">
 					<el-button size="small" @click="handleReview(scope.$index, scope.row)">核销</el-button>
 				</template>
@@ -83,10 +83,10 @@
 				var user = sessionStorage.getItem('user');
 				user = JSON.parse(user);
 				let para = {
-					//page: this.page,
+					page: this.page,
 					orderNumber: this.filters.ordernum ? this.filters.ordernum : "",
 					community: user.community,
-					page: 1
+					//page: 1
 				};
 				this.listLoading = true;
 				//NProgress.start();
@@ -98,6 +98,11 @@
 					})
 					this.listLoading = false;
 					//NProgress.done();
+				}).catch(() => {
+					this.$message({
+							message: "连接超时",
+							type: "warning"
+						});
 				});
 			},
 	        

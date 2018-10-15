@@ -10,7 +10,10 @@
     <el-form-item prop="checkPassTwo">
       <el-input type="password" v-model="ruleForm2.checkPassTwo" placeholder="确认密码"></el-input>
     </el-form-item>
-     <el-form-item prop="community">
+    <el-form-item prop="college">
+      <el-input type="text" v-model="ruleForm2.college" placeholder="大学名称"></el-input>
+    </el-form-item>
+    <el-form-item prop="community">
       <el-input type="text" v-model="ruleForm2.community" placeholder="社团名称"></el-input>
     </el-form-item>
     <el-form-item prop="tel">
@@ -18,6 +21,9 @@
     </el-form-item>
     <el-form-item prop="name">
       <el-input type="text" v-model="ruleForm2.name" placeholder="真实姓名"></el-input>
+    </el-form-item>
+    <el-form-item prop="IDcard">
+      <el-input type="text" v-model="ruleForm2.IDcard" placeholder="身份证号"></el-input>
     </el-form-item>
 
     <el-form-item style="width:100%;">
@@ -39,8 +45,10 @@ export default {
         checkPass: "",
         checkPassTwo: "",
         community: "",
+        college:"",
         tel: "",
-        name: ""
+        name: "",
+        IDcard:""
       },
       rules2: {
         account: [
@@ -66,7 +74,10 @@ export default {
         name: [
           { required: true, message: "请输入你的真实姓名", trigger: "blur" }
           //{ validator: validaePass2 }
-        ]
+        ],
+         IDcard:[
+           { required: true, message: "请输入你的身份证号", trigger: "blur" }
+         ]
       },
       checked: true
     };
@@ -98,6 +109,8 @@ export default {
               community: this.ruleForm2.community,
               name: this.ruleForm2.name,
               tel: this.ruleForm2.tel,
+              college: this.ruleForm2.college,
+              IDcard: this.ruleForm2.IDcard,
               permission: 2
             };
             requestRegister(registerParams).then(res => {

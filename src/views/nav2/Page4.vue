@@ -15,9 +15,9 @@
 
 		<el-row> 
 			<el-col :span="4" v-for="(o, index) in models" :key="o" :offset="index > 0 ? 0.5: 0">
-				<div  @click="viewModel(o)">
+				<div  @click="viewModel(o)" id="box">
 					<el-card :body-style="{ padding: '0px' }">
-						<img v-bind:src="o.picture[0]" class="image">
+						<img v-bind:src="o.picture[0]" alt="加载失败" class="image" >
 						<div style="padding: 14px;">
 							<span>{{o.name}}</span>
 							<div class="bottom clearfix">
@@ -54,20 +54,21 @@
 		<!--详情界面-->
 		<el-dialog title="详情" v-model="FormVisible" :close-on-click-modal="false">
 			<el-container :model="VisibleForm" ref="VisibleForm">
-				<el-aside width="200px">
+				<el-aside width="200px;" height="200px">
 					<el-carousel indicator-position="inside" height="100">
 						<el-carousel-item v-for="item in VisibleForm.picture" :key="item">
-							<img v-bind:src="item" class="imagedetails">
+							<div align="center"><img v-bind:src="item" class="imagedetails"></div>
 						</el-carousel-item>
 					</el-carousel>
 				</el-aside>
 				<el-container>
 					<el-header><h2>{{VisibleForm.name}}</h2></el-header>
 					<el-main>
-						<h4>商家：{{VisibleForm.poster}}</h4>
+						<h4>商家：{{VisibleForm.nickName}}</h4>
 						<h4>价格：{{VisibleForm.price}} 积分</h4>
 						<h4>库存：{{VisibleForm.number}}</h4>
 						<h4>描述：{{VisibleForm.content}}</h4>
+						<h4>分类：{{dealFeature(VisibleForm.feature)}}</h4>
 					</el-main>
 					<el-footer>
 						<div slot="footer" class="dialog-footer" scope="scope">
@@ -92,11 +93,23 @@
 				</el-form-item>
 				<el-form-item label="库存" prop="total">
 					<el-col :span="6">
-						<el-input  type="number" :min="1" v-model="editForm.total" auto-complete="off"></el-input>
+						<el-input  type="number" :min="1" v-model="editForm.number" auto-complete="off"></el-input>
 					</el-col>
 				</el-form-item>
-				<el-form-item label="描述" prop="description">
-					<el-input  type="textarea" v-model="editForm.description" auto-complete="off"></el-input>
+				<el-form-item label="描述" prop="content">
+					<el-input  type="textarea" v-model="editForm.content" auto-complete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="商品性质">
+					<template>
+						<el-select v-model="editForm.feature" placeholder="请选择">
+							<el-option
+								v-for="item in options"
+								:key="item.value"
+								:label="item.label"
+								:value="item.value">
+							</el-option>
+						</el-select>
+					</template>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -130,13 +143,37 @@ export default {
 	  editFormVisible: false, //编辑界面是否显示
 	  //编辑界面数据
 		editForm: {
-			id: '',
+			goodId: '',
 			name: '',
-			total: 0,
 			price: 0,
-			description:''
+			describe:"ChangeGood",
+			content: "",
+			poster:"",
+			number: "",
+			picture:[],
+			shopKind:"0",
+			nickName: "",
+			feature: "",
 		},
-	
+		options: [{
+          value: '1',
+          label: '服装'
+        }, {
+          value: '2',
+          label: '场地使用'
+        }, {
+          value: '3',
+          label: '道具租赁'
+        }, {
+          value: '4',
+          label: '摄影'
+        }, {
+          value: '5',
+          label: '后期'
+        }, {
+          value: '6',
+          label: '服装'
+        }],
     };
   },
   methods: {
@@ -147,6 +184,18 @@ export default {
       this.VisibleForm = Object.assign({}, model);
     },
 
+		//商品特征分类
+		dealFeature: function(e) {
+			switch(e){
+				case '1': return '服装';
+				case '2': return '场地使用';
+				case '3': return '道具租赁';
+				case '4': return '摄影';
+				case '5': return '后期';
+				case '6': return '服装';
+			}
+
+		},
     //获取商品列表
     getModel() {
       let para = {
@@ -158,17 +207,28 @@ export default {
       //NProgress.start();
       getModelListPage(para).then(res => {
         this.total = res.data.total;
-        this.models = res.data.models;
+				this.models = res.data.models;
+				for( var i = 0; i < this.models.length; i++){
+					if((typeof this.models[i].picture=='string') && this.models[i].picture.constructor==String)
+						this.models[i].picture = this.models[i].picture.split(",");
+				}
+				console.log(this.models);
 				//console.log(this.models);
         this.listLoading = false;
         //NProgress.done();
-      });
+      }).catch(() => {
+				this.$message({
+						message: "连接超时",
+						type: "warning"
+					});
+			});
 	},
 	
 	//显示更改商品界面
 	editVersion: function(VisibleForm) {
 		this.editFormVisible = true;
 		this.editForm = Object.assign({}, VisibleForm);
+		this.editForm.goodId = VisibleForm._id;
 	},
 
 	//提交更改
@@ -178,12 +238,28 @@ export default {
 						this.$confirm('确认提交吗？', '提示', {}).then(() => {
 							this.editLoading = true;
 							//NProgress.start();
+							var user = sessionStorage.getItem("user");
+								user = JSON.parse(user);
+								var username = user.name;
+								if(user.permission != "3" && username != this.editForm.nickName){
+									this.editLoading = false;
+									//NProgress.done();
+									this.$message({
+										message: "你不是此商品的发布者",
+										type: "warning"
+									});
+									return;
+							}
+							this.editForm.poster = user._id;
+							this.editForm.nickName = user.name;
+							this.editForm.describe = "ChangeGood";
 							let para = Object.assign({}, this.editForm);
+							console.log(para);
 							editModel(para).then((res) => {
 								this.editLoading = false;
 								//NProgress.done();
 								this.$message({
-									message: res.data.description,
+									message: (res.data.code == "1"	) ? "操作成功" : "操作失败",
 									type: (res.data.code == "1"	) ? "success" : "error"
 								});
 								this.$refs['editForm'].resetFields();
@@ -201,25 +277,35 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.listLoading = true;
+          this.editLoading = true;
           //NProgress.start();
           
           var user = sessionStorage.getItem("user");
-          if (user) {
-            user = JSON.parse(user);
-		  }
-		  let para = { 
-			  goodId: VisibleForm.id,
-			  id : user.id,
-			  description : "DeleteGood"	
-			   };
+					user = JSON.parse(user);
+					var username = user.name;
+					if(user.permission != "3" && username != this.editForm.nickName){
+						this.editLoading = false;
+						//NProgress.done();
+						this.$message({
+							message: "你不是此商品的发布者",
+							type: "warning"
+						});
+						return;
+						}
+					let para = { 
+							//goodId: VisibleForm._id,
+							//id : user.id,
+							//describe : "DeleteGood"	
+							id : VisibleForm._id,
+						};
           removeModel(para).then(res => {
-            this.listLoading = false;
+            this.editLoading = false;
             //NProgress.done();
             this.$message({
-              message: res.data.description,
+              message: res.data.code == "1" ? "操作成功" : "操作失败",
               type: res.data.code == "1" ? "success" : "error"
-            });
+						});
+						this.FormVisible = false;
             this.getModel();
           });
         })
@@ -241,6 +327,7 @@ export default {
 #box ul {
   display: flex;
   flex-wrap: wrap;
+	max-height:100%;
 }
 #box li {
   padding: 3px;
@@ -251,6 +338,7 @@ export default {
 #box img {
   width: 200px;
   height: 150px;
+
 }
 
 .el-carousel__item h3 {
@@ -321,13 +409,15 @@ body > .el-container {
 
 .image {
   width: 100%;
+	height: 100%;
   display: block;
+	margin: 0 auto;
 }
 
-.imagedetails {
-  max-width: 100%;
-  max-height: 100%;
-  margin: 0 auto;
+.imagedetails {	
+		height: 100%;
+		max-height: 300px;
+		overflow: hidden;
 }
 
 .clearfix:before,
