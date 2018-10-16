@@ -20,7 +20,7 @@
 		<el-table :data="users" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%; ">
 			<el-table-column type="selection" width="55">
 			</el-table-column>
-			<el-table-column type="index" width="50">
+			<el-table-column type="index" width="70">
 			</el-table-column>
 			<el-table-column prop="name" label="昵称" width="150" sortable>
 			</el-table-column>

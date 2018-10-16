@@ -105,6 +105,7 @@ export default {
       editFormVisible: false, //编辑界面是否显示
       //编辑界面数据
       editForm: {
+        id:"",
         scoreUse: ""
       }
     };
@@ -158,7 +159,7 @@ export default {
     editVersion: function(VisibleForm) {
       this.editFormVisible = true;
       this.editForm = Object.assign({}, VisibleForm);
-      this.editForm.goodId = VisibleForm._id;
+      this.editForm.id = VisibleForm._id;
     },
 
     //提交更改
@@ -175,7 +176,7 @@ export default {
               this.editLoading = false;
               //NProgress.done();
               this.$message({
-                message: res.data.code == "1" ? "操作成功" : "操作失败",
+                message: res.data.description,
                 type: res.data.code == "1" ? "success" : "error"
               });
               this.$refs["editForm"].resetFields();

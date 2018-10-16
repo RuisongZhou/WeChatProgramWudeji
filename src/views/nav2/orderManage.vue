@@ -40,11 +40,10 @@
 		</el-table>
 
 		<!--工具条-->
-		<!-- <el-col :span="24" class="toolbar">
-			<el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量核销</el-button>
+		<el-col :span="24" class="toolbar">
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
 			</el-pagination>
-		</el-col> -->
+		</el-col>
 
 
 	</section>
@@ -86,13 +85,14 @@
 					page: this.page,
 					orderNumber: this.filters.ordernum ? this.filters.ordernum : "",
 					community: user.community,
-					//page: 1
+					page: 1
 				};
 				this.listLoading = true;
 				//NProgress.start();
 				getConfirmModelListPage(para).then((res) => {
 					//this.total = res.data.total;
 					this.models = res.data.models;
+					this.total = res.data.total;
 					this.models.forEach((e) => {
 						e.ordertime = e.orderTime ? (e.orderTime.year + '-' + e.orderTime.month + '-' + e.orderTime.day + ' ' + e.orderTime.hour + ':' + e.orderTime.minutes) : "时间被吃了"
 					})

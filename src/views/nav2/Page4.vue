@@ -1,34 +1,37 @@
 <template>
 	<section>
 		<!--工具条-->
-		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-			<el-form :inline="true" :model="filters">
-				<el-form-item>
-					<el-input v-model="filters.name" placeholder="商品名称"></el-input>
-				</el-form-item>
-				<el-form-item>  
-					<el-button type="primary" v-on:click="getModel">查询</el-button>
-				</el-form-item>
-			</el-form>
-		</el-col>
-
-
-		<el-row> 
-			<el-col :span="4" v-for="(o, index) in models" :key="o" :offset="index > 0 ? 0.5: 0">
-				<div  @click="viewModel(o)" id="box">
-					<el-card :body-style="{ padding: '0px' }">
-						<img v-bind:src="o.picture[0]" alt="加载失败" class="image" >
-						<div style="padding: 14px;">
-							<span>{{o.name}}</span>
-							<div class="bottom clearfix">
-								<div class="price">价格：{{ o.price }}积分</div>
-							</div>
-						</div>
-					</el-card>
-				</div>	
+		<template>
+			<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
+			<el-select v-model="value" placeholder="请选择">
+				<el-option
+					v-for="item in options"
+					:key="item.value"
+					:label="item.label"
+					:value="item.value"
+					@click.native="DelFeature">
+				</el-option>
+			</el-select>
 			</el-col>
-		</el-row>
-	
+		</template>
+		<p>此商品是内部商城的</p>
+		<template>
+			<el-row> 
+				<el-col :span="4" v-for="(o, index) in models" :key="o" :offset="index > 0 ? 0.5: 0">
+					<div  @click="viewModel(o)" id="box">
+						<el-card :body-style="{ padding: '0px' }">
+							<img v-bind:src="o.picture[0]" alt="加载失败" class="image" >
+							<div style="padding: 14px;">
+								<span>{{o.name}}</span>
+								<div class="bottom clearfix">
+									<div class="price">价格：{{ o.price }}积分</div>
+								</div>
+							</div>
+						</el-card>
+					</div>	
+				</el-col>
+			</el-row>
+		</template>
 		<!--列表-->
 		<!--
 		 <div class="" id="box">
@@ -46,7 +49,6 @@
 	
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
-			<el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
@@ -132,48 +134,57 @@ export default {
       filters: {
         name: ""
       },
-      models: [],
+			models: [],
+			allmodels:[],
       total: 0,
       page: 1,
       listLoading: false,
       FormVisible: false,
       sels: [], //列表选中列
-	  VisibleForm: {},
-	  editLoading:false,
-	  editFormVisible: false, //编辑界面是否显示
-	  //编辑界面数据
-		editForm: {
-			goodId: '',
-			name: '',
-			price: 0,
-			describe:"ChangeGood",
-			content: "",
-			poster:"",
-			number: "",
-			picture:[],
-			shopKind:"0",
-			nickName: "",
-			feature: "",
-		},
-		options: [{
-          value: '1',
-          label: '服装'
-        }, {
-          value: '2',
-          label: '场地使用'
-        }, {
-          value: '3',
-          label: '道具租赁'
-        }, {
-          value: '4',
-          label: '摄影'
-        }, {
-          value: '5',
-          label: '后期'
-        }, {
-          value: '6',
-          label: '服装'
-        }],
+      VisibleForm: {},
+      editLoading: false,
+      editFormVisible: false, //编辑界面是否显示
+      //编辑界面数据
+      editForm: {
+        goodId: "",
+        name: "",
+        price: 0,
+        describe: "ChangeGood",
+        content: "",
+        poster: "",
+        number: "",
+        picture: [],
+        shopKind: "0",
+        nickName: "",
+        feature: ""
+      },
+      options: [
+        {
+          value: "1",
+          label: "服装"
+        },
+        {
+          value: "2",
+          label: "场地使用"
+        },
+        {
+          value: "3",
+          label: "道具租赁"
+        },
+        {
+          value: "4",
+          label: "摄影"
+        },
+        {
+          value: "5",
+          label: "后期"
+        },
+        {
+          value: "6",
+          label: "服装"
+        }
+			],
+			value:'',
     };
   },
   methods: {
@@ -184,92 +195,112 @@ export default {
       this.VisibleForm = Object.assign({}, model);
     },
 
-		//商品特征分类
-		dealFeature: function(e) {
-			switch(e){
-				case '1': return '服装';
-				case '2': return '场地使用';
-				case '3': return '道具租赁';
-				case '4': return '摄影';
-				case '5': return '后期';
-				case '6': return '服装';
-			}
-
+    handleCurrentChange(val) {
+      this.page = val;
+      this.getModel();
 		},
+		DelFeature:function() {
+			this.models = this.allmodels.filter(model => {
+				if (this.value && model.feature.indexOf(this.value) == -1) return false;
+				return true;
+			})
+		},
+    //商品特征分类
+    dealFeature: function(e) {
+      switch (e) {
+        case "1":
+          return "服装";
+        case "2":
+          return "场地使用";
+        case "3":
+          return "道具租赁";
+        case "4":
+          return "摄影";
+        case "5":
+          return "后期";
+        case "6":
+          return "化妆";
+      }
+    },
     //获取商品列表
     getModel() {
       let para = {
         page: this.page,
         name: this.filters.name,
-				shopKind: 0
+        shopKind: 0
       };
       this.listLoading = true;
       //NProgress.start();
-      getModelListPage(para).then(res => {
-        this.total = res.data.total;
-				this.models = res.data.models;
-				for( var i = 0; i < this.models.length; i++){
-					if((typeof this.models[i].picture=='string') && this.models[i].picture.constructor==String)
-						this.models[i].picture = this.models[i].picture.split(",");
-				}
-				console.log(this.models);
-				//console.log(this.models);
-        this.listLoading = false;
-        //NProgress.done();
-      }).catch(() => {
-				this.$message({
-						message: "连接超时",
-						type: "warning"
-					});
-			});
-	},
-	
-	//显示更改商品界面
-	editVersion: function(VisibleForm) {
-		this.editFormVisible = true;
-		this.editForm = Object.assign({}, VisibleForm);
-		this.editForm.goodId = VisibleForm._id;
-	},
+      getModelListPage(para)
+        .then(res => {
+          this.total = res.data.total;
+          this.models = res.data.models;
+          for (var i = 0; i < this.models.length; i++) {
+            if (
+              typeof this.models[i].picture == "string" &&
+              this.models[i].picture.constructor == String
+            )
+              this.models[i].picture = this.models[i].picture.split(",");
+          }
+          this.allmodels = this.models;
+					//console.log(this.models);
+          this.listLoading = false;
+          //NProgress.done();
+        })
+        .catch(() => {
+          this.$message({
+            message: "连接超时",
+            type: "warning"
+          });
+        });
+    },
 
-	//提交更改
-	editSubmit: function () {
-				this.$refs.editForm.validate((valid) => {
-					if (valid) {
-						this.$confirm('确认提交吗？', '提示', {}).then(() => {
-							this.editLoading = true;
-							//NProgress.start();
-							var user = sessionStorage.getItem("user");
-								user = JSON.parse(user);
-								var username = user.name;
-								if(user.permission != "3" && username != this.editForm.nickName){
-									this.editLoading = false;
-									//NProgress.done();
-									this.$message({
-										message: "你不是此商品的发布者",
-										type: "warning"
-									});
-									return;
-							}
-							this.editForm.poster = user._id;
-							this.editForm.nickName = user.name;
-							this.editForm.describe = "ChangeGood";
-							let para = Object.assign({}, this.editForm);
-							console.log(para);
-							editModel(para).then((res) => {
-								this.editLoading = false;
-								//NProgress.done();
-								this.$message({
-									message: (res.data.code == "1"	) ? "操作成功" : "操作失败",
-									type: (res.data.code == "1"	) ? "success" : "error"
-								});
-								this.$refs['editForm'].resetFields();
-								this.editFormVisible = false;
-								this.getModel();
-							});
-						});
-					}
-				});
-			},
+    //显示更改商品界面
+    editVersion: function(VisibleForm) {
+      this.editFormVisible = true;
+      this.editForm = Object.assign({}, VisibleForm);
+      this.editForm.goodId = VisibleForm._id;
+    },
+
+    //提交更改
+    editSubmit: function() {
+      this.$refs.editForm.validate(valid => {
+        if (valid) {
+          this.$confirm("确认提交吗？", "提示", {}).then(() => {
+            this.editLoading = true;
+            //NProgress.start();
+            var user = sessionStorage.getItem("user");
+            user = JSON.parse(user);
+            var username = user.name;
+            if (user.permission != "3" && username != this.editForm.nickName) {
+              this.editLoading = false;
+              //NProgress.done();
+              this.$message({
+                message: "你不是此商品的发布者",
+                type: "warning"
+              });
+              return;
+            }
+            this.editForm.poster = user._id;
+            this.editForm.nickName = user.name;
+            this.editForm.describe = "ChangeGood";
+            let para = Object.assign({}, this.editForm);
+            console.log(para);
+            editModel(para).then(res => {
+              this.editLoading = false;
+              //NProgress.done();
+              this.$message({
+                message: res.data.code == "1" ? "操作成功" : "操作失败",
+                type: res.data.code == "1" ? "success" : "error"
+              });
+              this.$refs["editForm"].resetFields();
+              this.editFormVisible = false;
+              this.getModel();
+            });
+          });
+        }
+      });
+    },
 
     //删除
     DelSubmit: function(VisibleForm) {
@@ -279,33 +310,33 @@ export default {
         .then(() => {
           this.editLoading = true;
           //NProgress.start();
-          
+
           var user = sessionStorage.getItem("user");
-					user = JSON.parse(user);
-					var username = user.name;
-					if(user.permission != "3" && username != this.editForm.nickName){
-						this.editLoading = false;
-						//NProgress.done();
-						this.$message({
-							message: "你不是此商品的发布者",
-							type: "warning"
-						});
-						return;
-						}
-					let para = { 
-							//goodId: VisibleForm._id,
-							//id : user.id,
-							//describe : "DeleteGood"	
-							id : VisibleForm._id,
-						};
+          user = JSON.parse(user);
+          var username = user.name;
+          if (user.permission != "3" && username != this.editForm.nickName) {
+            this.editLoading = false;
+            //NProgress.done();
+            this.$message({
+              message: "你不是此商品的发布者",
+              type: "warning"
+            });
+            return;
+          }
+          let para = {
+            //goodId: VisibleForm._id,
+            //id : user.id,
+            //describe : "DeleteGood"
+            id: VisibleForm._id
+          };
           removeModel(para).then(res => {
             this.editLoading = false;
             //NProgress.done();
             this.$message({
               message: res.data.code == "1" ? "操作成功" : "操作失败",
               type: res.data.code == "1" ? "success" : "error"
-						});
-						this.FormVisible = false;
+            });
+            this.FormVisible = false;
             this.getModel();
           });
         })
@@ -314,8 +345,7 @@ export default {
 
     selsChange: function(sels) {
       this.sels = sels;
-	},
-	
+    }
   },
   mounted() {
     this.getModel();
@@ -327,7 +357,7 @@ export default {
 #box ul {
   display: flex;
   flex-wrap: wrap;
-	max-height:100%;
+  max-height: 100%;
 }
 #box li {
   padding: 3px;
@@ -338,7 +368,6 @@ export default {
 #box img {
   width: 200px;
   height: 150px;
-
 }
 
 .el-carousel__item h3 {
@@ -409,15 +438,15 @@ body > .el-container {
 
 .image {
   width: 100%;
-	height: 100%;
+  height: 100%;
   display: block;
-	margin: 0 auto;
+  margin: 0 auto;
 }
 
-.imagedetails {	
-		height: 100%;
-		max-height: 300px;
-		overflow: hidden;
+.imagedetails {
+  height: 100%;
+  max-height: 300px;
+  overflow: hidden;
 }
 
 .clearfix:before,

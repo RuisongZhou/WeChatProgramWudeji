@@ -13,21 +13,22 @@
 		<el-table :data="activities" highlight-current-row v-loading="listLoading" style="width: 100%;">
 			<el-table-column type="index" width="50">
 			</el-table-column>
-			<el-table-column prop="name" label="活动名称" width="150" sortable>
+			<el-table-column prop="theme" label="活动名称" width="150" sortable>
 			</el-table-column>
-			<el-table-column prop="description" label="描述" width="250"  sortable>
+			<el-table-column prop="content" label="描述" width="250"  sortable>
 			</el-table-column>
-			<el-table-column prop="date" label="日期" width="200" sortable>
+			<el-table-column prop="ddl" label="日期" width="150" sortable>
 			</el-table-column>
-			<el-table-column prop="time" label="时间" width="200" sortable>
+			<el-table-column prop="place" label="地点" width="160" sortable>
 			</el-table-column>
-			<el-table-column prop="place" label="地点" width="200" sortable>
+			<el-table-column prop="poster.community" label="发起社团" width="150" sortable>
 			</el-table-column>
-			<el-table-column prop="launchCommunity" label="发起社团" width="200" sortable>
+			<el-table-column prop="status" label="活动状态" width="150" :formatter="formatStatus" sortable>
 			</el-table-column>
 			<el-table-column label="操作" width="250" >
 				<template scope="scope">
 					<el-button size="small" @click="handleView(scope.$index, scope.row)">查看报名</el-button>
+					<el-button type="warning" size="small" @click="handleStop(scope.$index, scope.row)" :loading="deleteLoading">停止报名</el-button>
 					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)" :loading="deleteLoading">删除</el-button>
 				</template>
 			</el-table-column> 	
@@ -35,37 +36,38 @@
 
 		<!--查看报名表-->
 		<el-dialog title="活动报名表" v-model="FormVisible" :close-on-click-modal="false" style="width: 100%;">
-
+	
 			<el-table :data="signUpList" v-loading="SighLoading" ref="signUpList" style="width: 100%;">
 				<el-table-column type="index" width="60">
 				</el-table-column>
-				<el-table-column prop="name" label="昵称" width="150" sortable>
+				<el-table-column prop="participant.nickName" label="昵称" width="150" sortable>
 				</el-table-column>
-				<el-table-column prop="gender" label="性别" width="100" :formatter="formatSex" sortable>
+				<el-table-column prop="participant.gender" label="性别" width="100" :formatter="formatSex" sortable>
 				</el-table-column>
-				<el-table-column prop="college" label="大学" min-width="180" sortable>
+				<el-table-column prop="participant.college" label="大学" min-width="180" sortable>
 				</el-table-column>
-				<el-table-column prop="community" label="社团" min-width="180" sortable>
+				<el-table-column prop="participant.community" label="社团" min-width="180" sortable>
 				</el-table-column>
-				<el-table-column prop="tel" label="注册电话" min-width="150" sortable>
+				<el-table-column prop="participant.tel" label="注册电话" min-width="150" sortable>
 				</el-table-column>
 			</el-table>
 
-			<el-container>
-				<el-footer style="text-align: center; font-size: 12px">
+			<el-container style="height:40px">
+				<el-header style="text-align: center; font-size: 12px">
 					<p>报名人数：{{this.signUpList.length}} 人</p>
-				</el-footer>
+				</el-header>
 			</el-container>
+			
 		</el-dialog>
 
 		<!--新增界面-->
 		<el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
 			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
 				<el-form-item label="活动名称">
-					<el-input v-model="addForm.name" auto-complete="off"></el-input>
+					<el-input v-model="addForm.theme" auto-complete="off"></el-input>
 				</el-form-item>
 				<el-form-item label="活动描述">
-					<el-input type='textarea' v-model="addForm.description" auto-complete="off"></el-input>
+					<el-input type='textarea' v-model="addForm.content" auto-complete="off"></el-input>
 				</el-form-item>
 				<el-form-item label="活动地点">
 					<el-input v-model="addForm.place" auto-complete="off"></el-input>
@@ -92,7 +94,8 @@
 import {getActivitiesList,
 		addActivity,
 		deleteActivity,
-		getSighList,
+		getSignList,
+		stopActivity,
 		} from '../../api/api';
 import util from '../../common/js/util';
 export default {
@@ -111,18 +114,19 @@ export default {
 			addLoading:false,
 			addFormVisible:false,
 			addForm:{
-				name:'',
-				description:'',
+				theme:'',
+				content:'',
 				place:'',
-				data:'',
+				date:'',
 				time:'',
-				launchCommunity:''
+				posterId:'',
+				picture:'',
 			},
 			addFormRules:{
-				name: [
+				theme: [
 				{ required: true, message: "请输入活动名称", trigger: "blur" }
 				],
-				description: [
+				content: [
 				{ required: true, message: "请输入活动描述", trigger: "blur" }
 				],
 				data: [
@@ -141,7 +145,11 @@ export default {
 	methods: {
 		//性别显示转换
 		formatSex: function (row, column) {
-			return row.gender == "1" ? '男' : row.gender == "0" ? '女' : '未知';
+			return row.participant.gender == "1" || row.gender == 1 ? '男' : row.participant.gender == "0" || row.gender == 0 ? '女' : '未知';
+		},
+
+		formatStatus: function (row, column) {
+			return row.status == "1" ? '正在报名' : row.status == "0" ? '已截止' : '未知';
 		},
 
 		//拉取活动列表
@@ -150,13 +158,10 @@ export default {
 			if (user) {
 					user = JSON.parse(user);
 				} 
-			let para = {
-				permission: user.permission,
-				community: user.community,
-			}
+			let para = {};
 			this.listLoading = true;
 			getActivitiesList(para).then((res) => {
-				this.activities = res.data.activities;
+				this.activities = res.data.activitys;
 				this.listLoading = false;
 			}).catch(() => {
 				this.$message({
@@ -172,8 +177,9 @@ export default {
 			var user = sessionStorage.getItem('user');
 			if (user) {
 					user = JSON.parse(user);
-				}
-			this.addForm.launchCommunity = user.community;
+			}
+			this.addForm.posterId = user.username;
+
 		},
 
 		//活动提交
@@ -181,9 +187,12 @@ export default {
 			this.$refs.addForm.validate(valid => {
 				if (valid) {
 					this.$confirm("确认提交吗？", "提示", {}).then(() => {
-						this.addLoading = true;
+						//this.addLoading = true;
+
 						let para = Object.assign({}, this.addForm);
-						para.date = (!para.date || para.date == '') ? '' : util.formatDate.format(new Date(para.leave_time), 'yyyy-MM-dd');
+						para.date = (!para.date || para.date == '') ? '' : util.formatDate.format(new Date(para.date), 'yyyyMMdd');
+						para.time = (!para.time || para.time == '') ? '' : util.formatDate.format(new Date(para.time), 'hhmm');
+						para.ddl = para.date + para.time;
 						console.log(para);
 						addActivity(para).then(res => {
 						this.addLoading = false;
@@ -200,15 +209,31 @@ export default {
 			})
 		},
 
+		//停止报名
+		handleStop:function(index, row) {
+			let para = {
+				activityId: row._id,
+			};
+			this.deleteLoading = true;
+			stopActivity(para).then((res) => {
+				this.deleteLoading = false;
+				this.$message({
+						message: (res.data.code == "1"	) ? "提交成功" : "提交失败",
+						type: (res.data.code == "1"	) ? "success" : "error"
+					});
+				this.getActivities();
+
+			})
+		},
 		//查看报名表
 		handleView: function(index, row) {
 			this.FormVisible = true;
 			this.SighLoading = true;
 			let para = {
-				id: row._id,
+				activityId: row._id,
 			};
-			getSighList(para).then((res) => {
-				this.signUpList = res.data.signUpList;
+			getSignList(para).then((res) => {
+				this.signUpList = res.data.confirm;
 				this.SighLoading = false;
 			});
 		},
@@ -216,7 +241,7 @@ export default {
 		//删除活动
 		handleDel: function(index, row) {
 			let para = {
-				id: row._id,
+				activityId: row._id,
 			};
 			this.deleteLoading = true;
 			deleteActivity(para).then((res) => {

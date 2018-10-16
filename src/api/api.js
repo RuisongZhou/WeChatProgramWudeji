@@ -454,3 +454,46 @@ export const getSignList = params => {
        transformRequest: function(obj) {var str = [];for(var p in obj)str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));return str.join("&");},
     });  
 }
+
+export const stopActivity = params => {
+    return axios({
+        method: 'post',
+        url: `${base}/activity/stop`,
+        data: params,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+       transformRequest: function(obj) {var str = [];for(var p in obj)str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));return str.join("&");},
+    });  
+}
+
+//获得外部商品列表
+export const getOutModelListPage = params => {
+    return axios({
+        method: 'get',
+        url: `${base}/market`,
+        params: params,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+       transformRequest: function(obj) {var str = [];for(var p in obj)str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));return str.join("&");},
+    });  
+}
+
+//修改商品列表
+export const editOutModel = params => {
+    return axios({
+        method: 'post',
+        url: `${base}/market/change`,
+        data: params,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+       transformRequest: function(obj) {var str = [];for(var p in obj)str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));return str.join("&");},
+    });  
+}
+
+//删除商品
+export const removeOutModel = params => {
+    return axios({
+        method: 'delete',
+        url: `${base}/market/delete`,
+        data: params,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+       transformRequest: function(obj) {var str = [];for(var p in obj)str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));return str.join("&");},
+    });  
+}

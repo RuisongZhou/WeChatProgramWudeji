@@ -95,7 +95,7 @@ export default {
           label: '后期'
         }, {
           value: '6',
-          label: '服装'
+          label: '化妆'
         }],
     };
   },
@@ -164,7 +164,7 @@ export default {
     },
 
     handleSuccess(response, file, fileList) {
-      var imagekey = `http://misswd.com/${response.key}`;
+      var imagekey = `https://qiniu.misswd.com/${response.key}`;
       this.form.picture.push(imagekey);
     },
 

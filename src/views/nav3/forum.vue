@@ -531,7 +531,8 @@ export default {
     },
 
     handleSuccess(response, file, fileList) {
-      var imagekey = `http://pg6q6hwnq.bkt.clouddn.com/${response.key}`;
+      var imagekey = `https://qiniu.misswd.com/${response.key}`;
+      //var imagekey = `http://pg6q6hwnq.bkt.clouddn.com/${response.key}`;
       this.addForm.picture = imagekey;
       this.srcOfImage = imagekey;
       console.log(imagekey);
