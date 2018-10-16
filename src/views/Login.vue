@@ -63,15 +63,20 @@
               let code = res.data.code;
               let description = res.data.description;
               let user = res.data.user;
-              if (code !== "200") {
+              if (code != "200") {
                 this.$message({
-                  message: description,
+                  message: "账号/密码错误",
                   type: 'error'
                 });
               } else {
                 sessionStorage.setItem('user', JSON.stringify(user));
                 this.$router.push({ path: '/table' });
               }
+            }).catch(() => {
+              this.$message({
+                  message: "连接超时",
+                  type: 'warning'
+                });
             });
           } else {
             console.log('error submit!!');

@@ -35,6 +35,7 @@
 
 		<!--查看报名表-->
 		<el-dialog title="活动报名表" v-model="FormVisible" :close-on-click-modal="false" style="width: 100%;">
+
 			<el-table :data="signUpList" v-loading="SighLoading" ref="signUpList" style="width: 100%;">
 				<el-table-column type="index" width="60">
 				</el-table-column>
@@ -49,6 +50,12 @@
 				<el-table-column prop="tel" label="注册电话" min-width="150" sortable>
 				</el-table-column>
 			</el-table>
+
+			<el-container>
+				<el-footer style="text-align: center; font-size: 12px">
+					<p>报名人数：{{this.signUpList.length}} 人</p>
+				</el-footer>
+			</el-container>
 		</el-dialog>
 
 		<!--新增界面-->
@@ -176,17 +183,18 @@ export default {
 					this.$confirm("确认提交吗？", "提示", {}).then(() => {
 						this.addLoading = true;
 						let para = Object.assign({}, this.addForm);
-						 addActivity(para).then(res => {
-							this.addLoading = false;
-
-							this.$message({
-								message: (res.data.code == "1"	) ? "提交成功" : "提交失败",
-                				type: (res.data.code == "1"	) ? "success" : "error"
-							});
-							this.$refs["addForm"].resetFields();
-							this.addFormVisible = false;
-							this.getActivities();
+						para.date = (!para.date || para.date == '') ? '' : util.formatDate.format(new Date(para.leave_time), 'yyyy-MM-dd');
+						console.log(para);
+						addActivity(para).then(res => {
+						this.addLoading = false;
+						this.$message({
+							message: (res.data.code == "1"	) ? "提交成功" : "提交失败",
+							type: (res.data.code == "1"	) ? "success" : "error"
 						});
+						this.$refs["addForm"].resetFields();
+						this.addFormVisible = false;
+						this.getActivities();
+					});
 					})
 				}
 			})

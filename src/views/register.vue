@@ -121,7 +121,7 @@ export default {
                 message: res.data.code == "200" ? "注册成功" : "信息有误",
                 type: res.data.code == "200" ? "success" : "error"
               });
-                  this.$router.push('/login');
+              this.$router.push('/login');
             });
           }
         } else {
