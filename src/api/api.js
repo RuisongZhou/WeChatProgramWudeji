@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-let base = 'http://localhost:8081';
+let base = 'http://47.96.99.12:8081';
 //let base = '42.156.141.13:8081';
 
 //登入
