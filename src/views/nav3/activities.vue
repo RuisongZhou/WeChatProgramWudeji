@@ -162,6 +162,9 @@ export default {
 			this.listLoading = true;
 			getActivitiesList(para).then((res) => {
 				this.activities = res.data.activitys;
+				this.activities.forEach( (e) => {
+					e.ddl = e.ddl.slice(0,4)+"-"+e.ddl.slice(4,6)+"-"+e.ddl.slice(6,8)+' ' + e.ddl.slice(8,10)+':'+e.ddl.slice(10,12);
+				})
 				this.listLoading = false;
 			}).catch(() => {
 				this.$message({

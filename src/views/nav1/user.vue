@@ -17,15 +17,21 @@
 			<el-table :data="users" highlight-current-row v-loading="loading" style="width: 100%;">
 				<el-table-column type="index" width="70">
 				</el-table-column>
-				<el-table-column prop="name" label="昵称" width="120" sortable>
+				<el-table-column prop="nickName" label="昵称" width="120" sortable>
 				</el-table-column>
-				<el-table-column prop="gender" label="性别" width="100" :formatter="formatSex" sortable>
+				<el-table-column prop="name" label="本名" width="120" sortable>
+				</el-table-column>
+				<el-table-column prop="gender" label="性别" width="90" :formatter="formatSex" sortable>
 				</el-table-column>
 				<el-table-column prop="college" label="大学" min-width="100" sortable>
 				</el-table-column>
-				<el-table-column prop="community" label="社团" min-width="180" sortable>
+				<el-table-column prop="community" label="社团" min-width="150" sortable>
 				</el-table-column>
-				<el-table-column prop="tel" label="注册电话" min-width="100" sortable>
+				<el-table-column prop="IDcard" label="身份证号" min-width="150" sortable>
+				</el-table-column>
+				<el-table-column prop="tel" label="注册电话" min-width="120" sortable>
+				</el-table-column>
+				<el-table-column prop="tel" label="住址" min-width="150" sortable>
 				</el-table-column>
 				<el-table-column label="操作" width="150">
 				<template scope="scope">
@@ -36,10 +42,16 @@
 			</el-table>
 		</template>
 
+		<!--工具条-->
+		<el-col :span="24" class="toolbar">
+			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
+			</el-pagination>
+		</el-col>
+
 	</section>
 </template>
 <script>
-	import { getRegisterUserList, passRegisterUser, refuseRegisterUser } from '../../api/api';
+	import { getRegisterUserList, passRegisterUser, refuseRegisterUser, removeUser } from '../../api/api';
 	//import NProgress from 'nprogress'
 	export default {
 		data() {
@@ -48,6 +60,8 @@
 					name: ''
 				},
 				loading: false,
+				total: 0,
+				page: 1,
 				users: [
 				],
 				//community:"",
@@ -58,6 +72,11 @@
 			formatSex: function (row, column) {
 				return row.gender == "1" ? '男' : row.gender == "0" ? '女' : '未知';
 			},
+
+			handleCurrentChange(val) {
+				this.page = val;
+				this.getUser();
+			},
 			//获取用户列表
 			getUser: function () {
 					var user = sessionStorage.getItem('user');
@@ -65,6 +84,7 @@
 						user = JSON.parse(user);
 					}
 				let para = {
+					page: this.page,
 					name: this.filters.name,
 					community: user.community,
 					access:0
@@ -74,6 +94,7 @@
 				
 				getRegisterUserList(para).then((res) => {
 					this.users = res.data.UsersInformation;
+					this.total = res.data.total;
 					this.loading = false;
 					//NProgress.done();
 				}).catch(() => {
@@ -104,8 +125,8 @@
 			handleDel: function (index, row) {
 				this.loading = true;
 				let para = { id:row.id ,
-							access: -1 };
-				refuseRegisterUser(para).then((res) => {
+						 };
+				removeUser(para).then((res) => {
 					this.loading = false;
 
 					this.$message({

@@ -9,9 +9,6 @@
 				<el-form-item>
 					<el-button type="primary" v-on:click="getUsers">查询</el-button>
 				</el-form-item>
-				<el-form-item>
-					<el-button type="primary" v-on:click="getUsers">查询</el-button>
-				</el-form-item>
 				<el-tag>积分数量：{{this.userscore}}</el-tag>
 			</el-form>
 		</el-col>
@@ -22,17 +19,19 @@
 			</el-table-column>
 			<el-table-column type="index" width="70">
 			</el-table-column>
-			<el-table-column prop="name" label="昵称" width="150" sortable>
+			<el-table-column prop="nickName" label="昵称" width="150" sortable>
 			</el-table-column>
-			<el-table-column prop="gender" label="性别" width="100" :formatter="formatSex" sortable>
+			<el-table-column prop="gender" label="性别" width="90" :formatter="formatSex" sortable>
 			</el-table-column>
 			<el-table-column prop="college" label="大学" min-width="180" sortable>
 			</el-table-column>
 			<el-table-column prop="community" label="社团" min-width="180" sortable>
 			</el-table-column>
+			<el-table-column prop="IDcard" label="身份证号" min-width="150" sortable>
+			</el-table-column>
 			<el-table-column prop="tel" label="注册电话" min-width="150" sortable>
 			</el-table-column>
-			<el-table-column prop="scores" label="积分" min-width="100" sortable>
+			<el-table-column prop="scores" label="积分" min-width="90" sortable>
 			</el-table-column>
 			<el-table-column label="操作"  width="250" >
 				<template scope="scope">
@@ -273,7 +272,7 @@
 				}).then(() => {
 					this.listLoading = true;
 					//NProgress.start();
-					let para = { ids: ids };
+					let para = { usernames: ids };
 					batchRemoveUser(para).then((res) => {
 						this.listLoading = false;
 						//NProgress.done();

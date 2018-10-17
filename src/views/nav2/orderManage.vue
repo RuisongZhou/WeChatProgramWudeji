@@ -14,7 +14,7 @@
 
 		<!--列表-->
 		<el-table :data="models" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%; ">
-			<el-table-column type="index" width="50">
+			<el-table-column type="index" width="60">
 			</el-table-column>
 			<el-table-column prop="orderNumber" label="商品订单号" width="190" sortable>
 			</el-table-column>
@@ -26,8 +26,8 @@
 			</el-table-column>
 			<el-table-column prop="ordertime" label="下单时间" min-width="160" sortable>
 			</el-table-column>
-			<el-table-column prop="buyNumber" label="购买数量" min-width="120" sortable>
-			</el-table-column>
+			<!-- <el-table-column prop="buyNumber" label="购买数量" min-width="120" sortable>
+			</el-table-column> -->
 			<el-table-column prop="reMarks" label="备注" min-width="150" sortable>
 			</el-table-column>
             <el-table-column prop="status" label="订单状态" min-width="120" :formatter="formatStatus" sortable>

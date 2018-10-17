@@ -52,28 +52,22 @@ export default {
       },
       rules2: {
         account: [
-          { required: true, message: "请输入账号", trigger: "blur" }
-          //{ validator: validaePass }
+          { required: true, message: "请输入账号", trigger: "blur" } 
         ],
         checkPass: [
           { required: true, message: "请输入密码", trigger: "blur" }
-          //{ validator: validaePass2 }
         ],
         checkPassTwo: [
-          { required: true, message: "请确认密码", trigger: "blur" }
-          //{ validator: validaePass2 }
+          { required: true, message: "请确认密码", trigger: "blur" }    
         ],
         community: [
-          { required: true, message: "请输入社团名称", trigger: "blur" }
-          //{ validator: validaePass2 }
+          { required: true, message: "请输入社团名称", trigger: "blur" }        
         ],
         tel: [
-          { required: true, message: "请输入你的电话", trigger: "blur" }
-          //{ validator: validaePass2 }
+          { required: true, message: "请输入你的电话", trigger: "blur" }        
         ],
         name: [
-          { required: true, message: "请输入你的真实姓名", trigger: "blur" }
-          //{ validator: validaePass2 }
+          { required: true, message: "请输入你的真实姓名", trigger: "blur" }      
         ],
          IDcard:[
            { required: true, message: "请输入你的身份证号", trigger: "blur" }
