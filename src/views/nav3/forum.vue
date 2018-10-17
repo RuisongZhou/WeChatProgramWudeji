@@ -386,7 +386,7 @@ export default {
       });
     },
     //精华帖
-    handleEliteBlog: function(index, row) {
+    handleViewElite: function(index, row) {
       this.eliteBlogsFormVisible = true;
       this.blogsLoading = true;
       let para = {
